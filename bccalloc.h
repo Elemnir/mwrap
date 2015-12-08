@@ -15,10 +15,10 @@ static BCC_Alloc_Data bcc_data;
 
 void BCC_Alloc_Data_init(BCC_Alloc_Data *d);
 
-int BCC_Alloc_Data_owns(BCC_Alloc_Data *d, void *p);
+int BCC_Alloc_Data_owns_d(BCC_Alloc_Data *d, void *p);
+int BCC_Alloc_Data_owns(void *p);
 
-void *bcc_alloc_d(size_t size, BCC_Alloc_Data *d);
-
+void *bcc_alloc_d(BCC_Alloc_Data *d, size_t size);
 void *bcc_alloc(size_t size);
 
 #endif //BCC_ALLOC_H
