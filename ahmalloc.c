@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "bccalloc.h"
+#include "bssalloc.h"
 
 /* Add profiling and instrumentation code to these functions */
 void prof_pre_alloc(size_t size) {
@@ -53,7 +53,7 @@ void *malloc(size_t size) {
     if (ah_init_status == 0) {
         ah_init();
     } else if (ah_init_status == 1) {
-        return bcc_alloc(size);
+        return bss_alloc(size);
     }
     
     prof_pre_alloc(size);
@@ -68,7 +68,7 @@ void *calloc(size_t nmemb, size_t size) {
     if (ah_init_status == 0) {
         ah_init();
     } else if (ah_init_status == 1) {
-        ptr = bcc_alloc(nmemb * size);
+        ptr = bss_alloc(nmemb * size);
         if (ptr) {
             memset(ptr, 0, nmemb * size);
         }
@@ -86,7 +86,7 @@ void free(void *ptr) {
         ah_init();
     } 
     
-    if (ah_init_status == 1 || BCC_Alloc_Data_owns(ptr)) {
+    if (ah_init_status == 1 || BSS_Alloc_Data_owns(ptr)) {
         return;
     }
     
@@ -101,7 +101,7 @@ void *realloc(void *ptr, size_t size) {
     if (ah_init_status == 0) {
         ah_init();
     } else if (ah_init_status == 1) {
-        nptr = bcc_alloc(size);
+        nptr = bss_alloc(size);
         if (nptr && ptr) {
             memmove(nptr, ptr, size);
             free(ptr);

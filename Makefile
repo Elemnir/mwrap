@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-fPIC
 LDFLAGS=-fPIC -shared
-SOURCES=ahmalloc.c bccalloc.c
+SOURCES=ahmalloc.c bssalloc.c
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=ahalloc.so
 
