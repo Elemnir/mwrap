@@ -39,10 +39,10 @@ int main(int argc, char** argv) {
     // Close the write end of the pipe on the harness
     close(pipefd[1]);
     
+    // TODO - replace with pipe-read loop and handle for SIGSEGV
     char *buf = (char*) calloc(1000, sizeof(char));
     read(pipefd[0], buf, 1000);
     printf("Harness got: %s", buf);
-
     int status;
     wait(&status);
 }
