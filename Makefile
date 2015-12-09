@@ -1,17 +1,31 @@
 CC=gcc
 CFLAGS=-fPIC
-LDFLAGS=-fPIC -shared
-SOURCES=ahmalloc.c bssalloc.c
-OBJECTS=$(SOURCES:.c=.o)
-EXECUTABLE=ahalloc.so
+CLDFLAGS=-fPIC -shared
+CSOURCES=mwmalloc.c bssalloc.c hooks.c
+COBJECTS=$(CSOURCES:.c=.o)
+PRELOADLIB=libmwrap.so
 
-all: $(SOURCES) $(EXECUTABLE)
+CXX=g++
+CXXFLAGS=
+CXXLDFLAGS=
+CXXSOURCES=harness.cpp
+CXXOBJECTS=$(CXXSOURCES:.cpp=.o)
+HARNESS=mwrap
 
-$(EXECUTABLE): $(OBJECTS)
-	$(CC) $(LDFLAGS) -o $(EXECUTABLE) $(OBJECTS)
+
+all: $(CSOURCES) $(PRELOADLIB) $(HARNESS)
+
+$(PRELOADLIB): $(COBJECTS)
+	$(CC) $(CLDFLAGS) -o $(PRELOADLIB) $(COBJECTS)
 
 .c.o:
 	$(CC) $(CFLAGS) -c $<
 
+$(HARNESS): $(CXXOBJECTS)
+	$(CXX) $(CXXLDFLAGS) -o $(HARNESS) $(CXXOBJECTS)
+
+.cpp.o:
+	$(CXX) $(CXXFLAGS) -c $<
+
 clean:
-	rm -f *.o $(EXECUTABLE)
+	rm -f *.o $(HARNESS) $(PRELOADLIB)

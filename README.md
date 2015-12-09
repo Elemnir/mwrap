@@ -2,7 +2,7 @@
 
 To Use:
 
-    - Add your instrumentation code to the functions `prof_post_init`, `prof_pre_alloc`, `prof_post_alloc`, `prof_pre_free` and `prof_post_free`
+    - Add your instrumentation code to the functions in the file `hooks.c`
     - Run the `make` to build the library
     - Assuming the program under test is `foo`, run `LD_PRELOAD=$PWD/ahalloc.so foo`
 

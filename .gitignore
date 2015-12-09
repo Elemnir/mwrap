@@ -2,4 +2,5 @@
 *.so
 *.a
 *.o
+mwrap
 tags

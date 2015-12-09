@@ -6,41 +6,17 @@
 #include <string.h>
 
 #include "bssalloc.h"
+#include "hooks.h"
 
-/* Add profiling and instrumentation code to these functions */
-void prof_post_init() {
-    /* preform any initialization here, occurs before resolving the first 
-     * memory allocation request in the program run. */
-}
-
-void prof_pre_alloc(size_t size) {
-    /* size is the amount of memory requested */
-    fprintf(stderr, "Allocating %li", size);
-}
-
-void prof_post_alloc(size_t size, void *ptr) {
-    /* size is the amount of memory requested, 
-     * ptr is the pointer about to be returned */
-    fprintf(stderr, " ptr=%p\n", ptr);
-}
-
-void prof_pre_free(void *ptr) {
-    /* ptr is the pointer about to be freed */
-}
-
-void prof_post_free() {
-}
-/* End hooks */
-
-static int ah_init_status; /* 0: Need Init, 1: Initializing, 2: Initialized */
+static int mwrap_init_status; /* 0: Need Init, 1: Initializing, 2: Initialized */
 
 static void *(*real_malloc)  (size_t size) = NULL;
 static void *(*real_calloc)  (size_t nmemb, size_t size) = NULL;
 static void  (*real_free)    (void *ptr) = NULL;
 static void *(*real_realloc) (void *ptr, size_t size) = NULL;
 
-static void ah_init() {
-    ah_init_status = 1;
+static void mwrap_init() {
+    mwrap_init_status = 1;
     real_malloc  = dlsym(RTLD_NEXT, "malloc");
     real_calloc  = dlsym(RTLD_NEXT, "calloc");
     real_free    = dlsym(RTLD_NEXT, "free");
@@ -49,16 +25,16 @@ static void ah_init() {
         fprintf(stderr, "Error in dlsym: %s\n", dlerror());
         exit(1);
     }
-    ah_init_status = 2;
+    mwrap_init_status = 2;
     prof_post_init();
 }
 
 void *malloc(size_t size) {
     void *ptr;
     
-    if (ah_init_status == 0) {
-        ah_init();
-    } else if (ah_init_status == 1) {
+    if (mwrap_init_status == 0) {
+        mwrap_init();
+    } else if (mwrap_init_status == 1) {
         return bss_alloc(size);
     }
     
@@ -71,9 +47,9 @@ void *malloc(size_t size) {
 void *calloc(size_t nmemb, size_t size) {
     void *ptr;
 
-    if (ah_init_status == 0) {
-        ah_init();
-    } else if (ah_init_status == 1) {
+    if (mwrap_init_status == 0) {
+        mwrap_init();
+    } else if (mwrap_init_status == 1) {
         ptr = bss_alloc(nmemb * size);
         if (ptr) {
             memset(ptr, 0, nmemb * size);
@@ -88,11 +64,11 @@ void *calloc(size_t nmemb, size_t size) {
 }
 
 void free(void *ptr) {
-    if (ah_init_status == 0) {
-        ah_init();
+    if (mwrap_init_status == 0) {
+        mwrap_init();
     } 
     
-    if (ah_init_status == 1 || BSS_Alloc_Data_owns(ptr)) {
+    if (mwrap_init_status == 1 || BSS_Alloc_Data_owns(ptr)) {
         return;
     }
     
@@ -104,9 +80,9 @@ void free(void *ptr) {
 void *realloc(void *ptr, size_t size) {
     void *nptr;
 
-    if (ah_init_status == 0) {
-        ah_init();
-    } else if (ah_init_status == 1) {
+    if (mwrap_init_status == 0) {
+        mwrap_init();
+    } else if (mwrap_init_status == 1) {
         nptr = bss_alloc(size);
         if (nptr && ptr) {
             memmove(nptr, ptr, size);
