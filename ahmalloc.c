@@ -8,6 +8,11 @@
 #include "bssalloc.h"
 
 /* Add profiling and instrumentation code to these functions */
+void prof_post_init() {
+    /* preform any initialization here, occurs before resolving the first 
+     * memory allocation request in the program run. */
+}
+
 void prof_pre_alloc(size_t size) {
     /* size is the amount of memory requested */
     fprintf(stderr, "Allocating %li", size);
@@ -45,6 +50,7 @@ static void ah_init() {
         exit(1);
     }
     ah_init_status = 2;
+    prof_post_init();
 }
 
 void *malloc(size_t size) {
