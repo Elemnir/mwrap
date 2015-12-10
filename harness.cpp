@@ -5,6 +5,7 @@
 #include <unistd.h>
 
 #include "defs.h"
+#include "harnesshooks.h"
 
 using namespace std;
 
@@ -13,6 +14,10 @@ int main(int argc, char** argv) {
     // Support '-l path' for non-standard libmwrap locations
     //string preloadlib((getopt(argc, argv, "l:") != -1) ? optarg : LIBMWRAPPATH);
     string preloadlib(LIBMWRAPPATH);
+    
+    // Allow for profiling data structure initialization
+    harness_init();
+    
     // Create a pipe so that the hooks can communicate back to the harness
     int pipefd[2];
     if (pipe(pipefd) < 0) {
@@ -39,10 +44,12 @@ int main(int argc, char** argv) {
     // Close the write end of the pipe on the harness
     close(pipefd[1]);
     
-    // TODO - replace with pipe-read loop and handle for SIGSEGV
-    char *buf = (char*) calloc(1000, sizeof(char));
-    read(pipefd[0], buf, 1000);
-    printf("Harness got: %s", buf);
-    int status;
-    wait(&status);
+    // Read messages from the test hooks until the pipe is closed
+    char *buf = (char*) calloc(MWRAPCOMMBUFSIZE, sizeof(char));
+    while (read(pipefd[0], buf, MWRAPCOMMBUFSIZE) != 0) {
+        harness_recv_event(buf);
+    }
+    
+    // Allow for clean up and final statistics
+    harness_finalize();
 }

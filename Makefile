@@ -1,14 +1,14 @@
 CC=gcc
 CFLAGS=-fPIC
 CLDFLAGS=-fPIC -shared -ldl
-CSOURCES=mwmalloc.c bssalloc.c hooks.c
+CSOURCES=mwmalloc.c bssalloc.c apphooks.c
 COBJECTS=$(CSOURCES:.c=.o)
 PRELOADLIB=libmwrap.so
 
 CXX=g++
 CXXFLAGS=
 CXXLDFLAGS=
-CXXSOURCES=harness.cpp
+CXXSOURCES=harness.cpp harnesshooks.cpp
 CXXOBJECTS=$(CXXSOURCES:.cpp=.o)
 HARNESS=mwrap
 

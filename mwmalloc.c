@@ -6,7 +6,7 @@
 #include <string.h>
 
 #include "bssalloc.h"
-#include "hooks.h"
+#include "apphooks.h"
 
 static int mwrap_init_status; /* 0: Need Init, 1: Initializing, 2: Initialized */
 

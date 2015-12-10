@@ -1,4 +1,4 @@
-#include "hooks.h"
+#include "apphooks.h"
 
 #include <stdio.h>
 #include <string.h>
