@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-fPIC
-CLDFLAGS=-fPIC -shared
+CLDFLAGS=-fPIC -shared -ldl
 CSOURCES=mwmalloc.c bssalloc.c hooks.c
 COBJECTS=$(CSOURCES:.c=.o)
 PRELOADLIB=libmwrap.so

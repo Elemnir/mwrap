@@ -11,8 +11,8 @@ using namespace std;
 int main(int argc, char** argv) {
 
     // Support '-l path' for non-standard libmwrap locations
-    string preloadlib((getopt(argc, argv, "l:") != -1) ? optarg : LIBMWRAPPATH);
-    
+    //string preloadlib((getopt(argc, argv, "l:") != -1) ? optarg : LIBMWRAPPATH);
+    string preloadlib(LIBMWRAPPATH);
     // Create a pipe so that the hooks can communicate back to the harness
     int pipefd[2];
     if (pipe(pipefd) < 0) {
