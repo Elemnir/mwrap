@@ -5,17 +5,20 @@
 
 #include "defs.h"
 
+FILE* cfp;
+
 /* Add profiling and instrumentation code to these functions */
 void prof_post_init() {
     /* preform any initialization here, occurs before resolving the first 
      * memory allocation request in the program run. */
-    char *message = "Communication works!\n";
-    write(MWRAPCOMMFD, message, strlen(message));
+    cfp = fdopen(MWRAPCOMMFD, "w");
 }
 
 void prof_pre_alloc(size_t size) {
     /* size is the amount of memory requested */
-    //fprintf(stderr, "Allocating %li", size);
+    //fprintf(cfp, "Allocating %li", size);
+    //fflush(cfp);
+    //write(MWRAPCOMMFD, "Allocating\n", strlen("Allocating\n"));
 }
 
 void prof_post_alloc(size_t size, void *ptr) {

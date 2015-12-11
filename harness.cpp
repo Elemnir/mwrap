@@ -43,10 +43,12 @@ int main(int argc, char** argv) {
     
     // Close the write end of the pipe on the harness
     close(pipefd[1]);
+
+    FILE* pfh = fdopen(pipefd[0], "r");
     
     // Read messages from the test hooks until the pipe is closed
     char *buf = (char*) calloc(MWRAPCOMMBUFSIZE, sizeof(char));
-    while (read(pipefd[0], buf, MWRAPCOMMBUFSIZE) != 0) {
+    while (fgets(buf, MWRAPCOMMBUFSIZE, pfh) != NULL) {
         harness_recv_event(buf);
     }
     

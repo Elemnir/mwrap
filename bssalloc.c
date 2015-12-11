@@ -1,5 +1,7 @@
 #include "bssalloc.h"
 
+#include <stdio.h>
+
 void BSS_Alloc_Data_init(BSS_Alloc_Data *d) {
     d->cptr = (void*) d->pool;
 }
@@ -20,6 +22,9 @@ void *bss_alloc_d(BSS_Alloc_Data *d, size_t size) {
         p = d->cptr;
         d->cptr += nsize;
     }
+    //fprintf(stderr, "bss_alloc called with size: %d\n", size);
+    //fflush(stderr);
+    write(2, "bss_alloc called\n", 17);
     return p;
 }
 
@@ -28,4 +33,12 @@ void *bss_alloc(size_t size) {
         BSS_Alloc_Data_init(&bss_data);
     }
     return bss_alloc_d(&bss_data, size);
+}
+
+void bss_free_d(BSS_Alloc_Data *d, void *p) {
+    
+}
+
+void bss_free(void *p) {
+    bss_free_d(&bss_data, p);
 }

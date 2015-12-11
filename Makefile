@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-fPIC
+CFLAGS=-fPIC -g
 CLDFLAGS=-fPIC -shared -ldl
 CSOURCES=mwmalloc.c bssalloc.c apphooks.c
 COBJECTS=$(CSOURCES:.c=.o)

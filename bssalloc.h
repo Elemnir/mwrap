@@ -1,7 +1,7 @@
 #ifndef BSS_ALLOC_H
 #define BSS_ALLOC_H
 
-#define BSS_POOL_SIZE 512
+#define BSS_POOL_SIZE 8192
 
 #include <stdlib.h>
 
@@ -20,5 +20,8 @@ int BSS_Alloc_Data_owns(void *p);
 
 void *bss_alloc_d(BSS_Alloc_Data *d, size_t size);
 void *bss_alloc(size_t size);
+
+void bss_free_d(BSS_Alloc_Data *d, void *p);
+void bss_free(void *p);
 
 #endif //BSS_ALLOC_H

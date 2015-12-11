@@ -9,6 +9,7 @@
 #include "apphooks.h"
 
 static int mwrap_init_status; /* 0: Need Init, 1: Initializing, 2: Initialized */
+static int mwrap_in_hook; /* 0: Not called by hook, 1: Called within hook */
 
 static void *(*real_malloc)  (size_t size) = NULL;
 static void *(*real_calloc)  (size_t nmemb, size_t size) = NULL;
@@ -34,13 +35,20 @@ void *malloc(size_t size) {
     
     if (mwrap_init_status == 0) {
         mwrap_init();
-    } else if (mwrap_init_status == 1) {
+    } else if (mwrap_in_hook || mwrap_init_status == 1) {
         return bss_alloc(size);
     }
     
+    mwrap_in_hook = 1;
     prof_pre_alloc(size);
+    mwrap_in_hook = 0;
+
     ptr = real_malloc(size);
+    
+    mwrap_in_hook = 1;
     prof_post_alloc(size, ptr);
+    mwrap_in_hook = 0;
+
     return ptr;
 }
 
@@ -49,7 +57,7 @@ void *calloc(size_t nmemb, size_t size) {
 
     if (mwrap_init_status == 0) {
         mwrap_init();
-    } else if (mwrap_init_status == 1) {
+    } else if (mwrap_in_hook || mwrap_init_status == 1) {
         ptr = bss_alloc(nmemb * size);
         if (ptr) {
             memset(ptr, 0, nmemb * size);
@@ -57,9 +65,16 @@ void *calloc(size_t nmemb, size_t size) {
         return ptr;
     }
     
+    mwrap_in_hook = 1;
     prof_pre_alloc(size);
+    mwrap_in_hook = 0;
+
     ptr = real_calloc(nmemb, size);
+    
+    mwrap_in_hook = 1;
     prof_post_alloc(size, ptr);
+    mwrap_in_hook = 0;
+    
     return ptr;
 }
 
@@ -68,7 +83,7 @@ void free(void *ptr) {
         mwrap_init();
     } 
     
-    if (mwrap_init_status == 1 || BSS_Alloc_Data_owns(ptr)) {
+    if (BSS_Alloc_Data_owns(ptr)) {
         return;
     }
     
@@ -82,7 +97,7 @@ void *realloc(void *ptr, size_t size) {
 
     if (mwrap_init_status == 0) {
         mwrap_init();
-    } else if (mwrap_init_status == 1) {
+    } else if (mwrap_in_hook || mwrap_init_status == 1) {
         nptr = bss_alloc(size);
         if (nptr && ptr) {
             memmove(nptr, ptr, size);
@@ -91,8 +106,15 @@ void *realloc(void *ptr, size_t size) {
         return nptr;
     }
 
+    mwrap_in_hook = 1;
     prof_pre_alloc(size);
+    mwrap_in_hook = 0;
+    
     nptr = real_realloc(ptr, size);
+    
+    mwrap_in_hook = 1;
     prof_post_alloc(size, nptr);
+    mwrap_in_hook = 0;
+    
     return nptr;
 }
