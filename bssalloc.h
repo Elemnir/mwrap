@@ -1,7 +1,7 @@
 #ifndef BSS_ALLOC_H
 #define BSS_ALLOC_H
 
-#define BSS_POOL_SIZE 1024 * 1024
+#define BSS_POOL_SIZE 32 * 1024
 
 #include <stdlib.h>
 
