@@ -3,11 +3,11 @@
 #include <stdio.h>
 
 void BSS_Alloc_Data_init(BSS_Alloc_Data *d) {
-    d->cptr = (void*) d->pool;
+    d->cptr = d->pool;
 }
 
 int BSS_Alloc_Data_owns_d(BSS_Alloc_Data *d, void *p) {
-    return (p >= (void*) d->pool && p <= d->cptr);
+    return ((char*) p >= d->pool && (char*) p <= d->cptr);
 }
 
 int BSS_Alloc_Data_owns(void *p) {
@@ -15,17 +15,15 @@ int BSS_Alloc_Data_owns(void *p) {
 }
 
 void *bss_alloc_d(BSS_Alloc_Data *d, size_t size) {
-    void *p = NULL;
+    char *p = NULL;
     size_t nsize = size + ((size % 8) ? 8 - size % 8 : 0);
     
-    if (d->cptr + nsize < ((void*) d->pool) + BSS_POOL_SIZE) {
+    if (d->cptr + nsize < d->pool + BSS_POOL_SIZE) {
         p = d->cptr;
         d->cptr += nsize;
     }
-    //fprintf(stderr, "bss_alloc called with size: %d\n", size);
-    //fflush(stderr);
-    write(2, "bss_alloc called\n", 17);
-    return p;
+
+    return (void*) p;
 }
 
 void *bss_alloc(size_t size) {

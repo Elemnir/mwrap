@@ -27,7 +27,9 @@ static void mwrap_init() {
         exit(1);
     }
     mwrap_init_status = 2;
+    mwrap_in_hook = 1;
     prof_post_init();
+    mwrap_in_hook = 0;
 }
 
 void *malloc(size_t size) {
@@ -35,7 +37,7 @@ void *malloc(size_t size) {
     
     if (mwrap_init_status == 0) {
         mwrap_init();
-    } else if (mwrap_in_hook || mwrap_init_status == 1) {
+    } else if (mwrap_in_hook == 1 || mwrap_init_status == 1) {
         return bss_alloc(size);
     }
     

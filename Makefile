@@ -1,6 +1,7 @@
 CC=gcc
 CFLAGS=-fPIC -g
-CLDFLAGS=-fPIC -shared -ldl
+CLDFLAGS=-fPIC -shared
+CLIBS=-ldl
 CSOURCES=mwmalloc.c bssalloc.c apphooks.c
 COBJECTS=$(CSOURCES:.c=.o)
 PRELOADLIB=libmwrap.so
@@ -16,7 +17,7 @@ HARNESS=mwrap
 all: $(CSOURCES) $(PRELOADLIB) $(HARNESS)
 
 $(PRELOADLIB): $(COBJECTS)
-	$(CC) $(CLDFLAGS) -o $(PRELOADLIB) $(COBJECTS)
+	$(CC) $(CLDFLAGS) -o $(PRELOADLIB) $(COBJECTS) $(CLIBS)
 
 .c.o:
 	$(CC) $(CFLAGS) -c $<

@@ -1,13 +1,13 @@
 #ifndef BSS_ALLOC_H
 #define BSS_ALLOC_H
 
-#define BSS_POOL_SIZE 8192
+#define BSS_POOL_SIZE 1024 * 1024
 
 #include <stdlib.h>
 
 typedef struct {
     char pool[BSS_POOL_SIZE];
-    void *cptr;
+    char *cptr;
 
 } BSS_Alloc_Data;
 
