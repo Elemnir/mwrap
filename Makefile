@@ -7,7 +7,7 @@ COBJECTS=$(CSOURCES:.c=.o)
 PRELOADLIB=libmwrap.so
 
 CXX=g++
-CXXFLAGS=
+CXXFLAGS= -std=c++11
 CXXLDFLAGS=
 CXXSOURCES=harness.cpp harnesshooks.cpp
 CXXOBJECTS=$(CXXSOURCES:.cpp=.o)

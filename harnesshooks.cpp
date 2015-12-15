@@ -1,5 +1,6 @@
 #include "harnesshooks.h"
 
+#include <iostream>
 #include <map>
 #include <stdio.h>
 #include <string>
@@ -32,18 +33,31 @@ void harness_recv_event(const char* buf) {
 
     if (!strcmp(buf, "AllocStart\n")) {
         trace.clear();
-        printf("Start Allocation\n");
+        //printf("Start Allocation\n");
     } else if (!strcmp(buf, "AllocEnd\n")) {
-        printf("End Allocation\n");
+        //printf("End Allocation\n");
+        callsites[trace[2]].total += amt;
+        callsites[trace[2]].entries.push_back(make_pair(ptr, amt));
     } else if (!strncmp(buf, "Size:", 5)) {
-        printf("Size Message: %s", buf);
+        //printf("Size Message: %s", buf);
+        sscanf(buf, "Size: %d", &amt);
     } else if (!strncmp(buf, "Ptr:", 4)) {
-        printf("Ptr Message: %s", buf);
+        //printf("Ptr Message: %s", buf);
+        sscanf(buf, "Ptr: %li", &ptr);
     } else {
-        printf("Other: %s", buf);
+        //printf("Other: %s", buf);
+        trace.push_back(buf);
     }
 }
 
 void harness_finalize() {
-
+    for (auto ci = callsites.begin(); ci != callsites.end(); ci++) {
+        cerr << "Callsite: " << ci->first;
+        cerr << "Total: " << ci->second.total << endl;
+        cerr << "Blocks:\n";
+        for (auto i = 0; i < ci->second.entries.size(); i++) {
+            cerr << "    " << ci->second.entries[i].first << " "
+                 << ci->second.entries[i].second << endl;
+        }
+    }
 }
